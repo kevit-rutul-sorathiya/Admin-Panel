@@ -1,0 +1,47 @@
+<p-toast position="top-right" key="loginKey"></p-toast>
+<p-toast position="top-right" key="loginRejectionKey"></p-toast>
+<div  class="flex justify-content-center align-items-center h-screen">
+  <div class="surface-card p-4 shadow-2 border-round w-full lg:w-5  bg-blue-100">
+    <div class="text-center mb-5">
+      <img src="https://primefaces.org/primeblocks-ng/assets/images/blocks/logos/hyper.svg" alt="Image" height="50" class="mb-3">
+      <div class="text-900 text-3xl font-medium mb-3">Welcome Back</div>
+      <span class="text-600 font-medium line-height-3">Don't have an account?</span>
+      <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer">Create today!</a>
+    </div>
+    <form [formGroup]="userLoginForm" (ngSubmit)="onUserLoginFormSubmit()">
+      <div>
+        <label for="email" class="block text-900 font-medium mb-2 font-semibold">Email</label>
+        <input id="email"
+               type="text"
+               pInputText
+               class="w-full"
+               formControlName="email"
+               placeholder="Enter E-mail"
+               [ngClass]="userLoginForm.controls['email'].errors && userLoginForm.controls['email'].touched ? 'border-red-600': '' "  >
+        <small  class="p-error" *ngIf="userLoginForm.controls['email'].errors && userLoginForm.controls['email'].touched" class="text-red-600">Enter valid email</small>
+
+        <label for="password" class="block text-900 font-medium mb-2 mt-2 font-semibold">Password</label>
+        <input id="password"
+               type="password"
+               pInputText
+               class="w-full"
+               formControlName="password"
+               placeholder="Enter password"
+               [ngClass]="userLoginForm.controls['password'].errors && userLoginForm.controls['password'].touched ? 'border-red-600': '' " >
+        <small class="p-error" *ngIf="userLoginForm.controls['password'].errors && userLoginForm.controls['password'].touched" class="text-red-600">Enter valid password</small>
+
+        <div class="flex align-items-center justify-content-between mb-6 mt-2">
+          <div class="flex align-items-center">
+            <p-checkbox id="rememberme" [binary]="true" styleClass="mr-2"></p-checkbox>
+            <label for="rememberme" class="text-900">Remember me</label>
+          </div>
+          <a class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">Forgot password?</a>
+        </div>
+
+        <button pButton pRipple label="Sign In" icon="pi pi-user" class="w-full" type="submit" [disabled]="userLoginForm.invalid" ></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
