@@ -1,41 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnChanges, OnInit} from '@angular/core';
 import {DataService} from "../../service/data.service";
 import {IUser} from "../../Interfaces/IUser";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {Router} from "@angular/router";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  styles:[`
-        :host ::ng-deep .p-dialog .product-image {
-            width: 150px;
-            margin: 0 auto 2rem auto;
-            display: block;
-        }
-    `]
+
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnChanges {
+  loading:boolean=false;
   page:number = 1;
   userID : number = -1;
   userDetailForm !: FormGroup;
-  usersList= [];
+  usersList:any;
   user!:IUser;
   display:boolean =false;
+  searchInput:string= '' ;
   constructor(private dataService: DataService,
               private confirmationService: ConfirmationService,
               private messageService: MessageService,
-              private router: Router) { }
+              private router: Router,
+              private http: HttpClient) {}
 
   ngOnInit(): void {
     this.initForm();
-    this.dataService.getUsersList().subscribe(
+    this.getUserList();
+  }
+
+  ngOnChanges() {
+    console.log(this.searchInput)
+  }
+
+  private getUserList(page? : number) {
+    this.dataService.getUsersList(page ? page : 1).subscribe(
       (usersList:any)=>{
-         this.page = usersList.total;
-         console.log(this.page);
-        this.usersList = usersList.data;
+        this.page = usersList.total;
+        this.usersList = [ ...usersList.data]
       }
     )
   }
@@ -57,8 +62,11 @@ export class DashboardComponent implements OnInit {
       accept: ()=>{
         this.messageService.add({severity:'success', summary: 'Successful', detail: 'User deleted', life: 3000});
         this.dataService.getDeleteUser(id).subscribe(
-          (res)=>{
-            console.log(res);
+          (deleteUserRes)=>{
+            console.log("deleteUserRes "+deleteUserRes);
+          },
+          (deleteUserErr)=>{
+            console.log("deleteUserErr "+deleteUserErr);
           }
         )
       }
@@ -84,7 +92,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onUserDetailFormSubmit(){
-    if(this.userID !== -1){
+    if (this.userID !== -1){
       this.dataService.updateUserObject(this.userDetailForm.value,this.userID).subscribe(
         (res:any)=>{
           console.log(res);
@@ -107,5 +115,13 @@ export class DashboardComponent implements OnInit {
 
   onLogoutClick(){
     this.router.navigate(['login'])
+  }
+
+  onChangePage(e: any){
+    this.getUserList(((e.first/e.rows)+1))
+  }
+
+  onSort(e: any) {
+    console.log(e);
   }
 }

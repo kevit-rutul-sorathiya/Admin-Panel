@@ -15,8 +15,8 @@ export class DataService {
     return  this.http.post("https://reqres.in/api/login",userLoginObject)
   }
 
-  getUsersList(){
-    return this.http.get("https://reqres.in/api/users")
+  getUsersList(page : number){
+    return this.http.get("https://reqres.in/api/users?page="+page);
   }
 
   getDeleteUser(id:number){

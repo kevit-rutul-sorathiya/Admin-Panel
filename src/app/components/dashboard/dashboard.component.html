@@ -21,8 +21,6 @@
       <button pButton pRipple label="Logout" class="py-2 px-3" (click)="onLogoutClick()"></button>
     </div>
   </div>
-
-
 </div>
 <p-toast></p-toast>
 <p-toast  position="top-right" key="updateKey"></p-toast>
@@ -35,23 +33,33 @@
     </ng-template>
   </p-toolbar>
 
-  <p-table  #dt [value]="usersList"  [paginator]="true" [rows]="usersList.length" [globalFilterFields]="['firstName','LastName','email']" responsiveLayout="scroll"
-            [rowHover]="true" dataKey="id"  [totalRecords]="page"
-           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+  <p-table #dt
+           [lazy]="true"
+           (onPage)="onChangePage($event)"
+           (onSort)="onSort($event)"
+           sortMode="multiple"
+           responsiveLayout="scroll"
+           dataKey="id"
+           [value]="usersList"
+           [paginator]="true"
+           [rows]="6"
+           [globalFilterFields]="['first_name','last_name','email']"
+           [loading]="loading"
+           [totalRecords]="page">
     <ng-template pTemplate="caption">
       <div class="flex align-items-center justify-content-between">
-        <h4 class="m-0">Manage Products</h4 >
+        <h3 class="m-0">Manage Products</h3 >
         <span class="p-input-icon-left">
           <i class="pi pi-search"></i>
-          <input pInputText type="text" (input)="dt.filterGlobal($event.target, 'contains')" placeholder="Search..." />
+          <input pInputText type="text" [(ngModel)]="searchInput" (input)="dt.filterGlobal(searchInput, 'contains')" placeholder="Search..." />
         </span>
       </div>
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
         <th>Avatar</th>
-        <th pSortableColumn="firstName">First Name <p-sortIcon field="firstName"></p-sortIcon></th>
-        <th pSortableColumn="lastName">Last Name<p-sortIcon field="lastName"></p-sortIcon></th>
+        <th pSortableColumn="first_name">First Name <p-sortIcon field="first_name" ></p-sortIcon></th>
+        <th pSortableColumn="last_name">Last Name<p-sortIcon field="last_name"></p-sortIcon></th>
         <th pSortableColumn="email">E-mail <p-sortIcon field="email"></p-sortIcon></th>
         <th></th>
       </tr>
@@ -70,7 +78,6 @@
     </ng-template>
   </p-table>
 </div>
-
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 <p-sidebar [(visible)]="display" position="right" [style]="{width: '450px'}">
   <h2>User Details</h2>
@@ -123,6 +130,7 @@
         <small class="p-error"
                *ngIf="userDetailForm.controls['email'].errors && userDetailForm.controls['email'].touched " >Email is required.</small>
       </div>
-      <button pButton pRipple label="Save" type="submit" icon="pi pi-check" class="p-button-text py-2 px-3" [disabled]="userDetailForm.invalid"  ></button>
+      <button pButton pRipple label="Save" type="submit" icon="pi pi-check" class="p-button-text py-2 px-3" [disabled]="userDetailForm.invalid"></button>
   </form>
 </p-sidebar>
+
