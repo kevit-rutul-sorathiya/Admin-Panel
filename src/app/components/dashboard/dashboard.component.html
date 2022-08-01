@@ -44,7 +44,6 @@
            [paginator]="true"
            [rows]="6"
            [globalFilterFields]="['first_name','last_name','email']"
-           [loading]="loading"
            [totalRecords]="page">
     <ng-template pTemplate="caption">
       <div class="flex align-items-center justify-content-between">
@@ -58,15 +57,13 @@
     <ng-template pTemplate="header">
       <tr>
         <th>Avatar</th>
-        <th pSortableColumn="first_name">First Name <p-sortIcon field="first_name" ></p-sortIcon></th>
-        <th pSortableColumn="last_name">Last Name<p-sortIcon field="last_name"></p-sortIcon></th>
-        <th pSortableColumn="email">E-mail <p-sortIcon field="email"></p-sortIcon></th>
+        <th *ngFor="let col of columns" pSortableColumn="{{col.column}}">{{col.header}}<p-sortIcon field="{{col.column}}" ></p-sortIcon></th>
         <th></th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-user>
       <tr>
-        <td><img [src]="user.avatar" alt="image not fund" width="70" height="70" class="shadow-4" /></td>
+        <td><img [src]="user.avatar" alt="image not fund" class="shadow-4 w-70 h-70" /></td>
         <td>{{user.first_name}}</td>
         <td>{{user.last_name}}</td>
         <td>{{user.email}}</td>
@@ -90,7 +87,7 @@
                required
                autofocus
                formControlName="firstName"
-               [ngClass]="userDetailForm.controls['firstName'].errors && userDetailForm.controls['firstName'].touched ? 'border-red-600': '' " />
+               [ngClass]="{'border-red-600':userDetailForm.controls['firstName'].errors && userDetailForm.controls['firstName'].touched}"/>
         <small class="p-error"
                *ngIf="userDetailForm.controls['firstName'].errors && userDetailForm.controls['firstName'].touched" >First Name is required.</small>
       </div>
@@ -102,7 +99,7 @@
                required
                autofocus
                formControlName="lastName"
-               [ngClass]="userDetailForm.controls['lastName'].errors && userDetailForm.controls['lastName'].touched ? 'border-red-600': '' " />
+               [ngClass]="{'border-red-600':userDetailForm.controls['lastName'].errors && userDetailForm.controls['lastName'].touched}" />
         <small class="p-error"
                *ngIf="userDetailForm.controls['lastName'].errors && userDetailForm.controls['lastName'].touched" >Last Name is required.</small>
       </div>
@@ -114,19 +111,19 @@
                required
                autofocus
                formControlName="imageLink"
-               [ngClass]="userDetailForm.controls['imageLink'].errors && userDetailForm.controls['imageLink'].touched ? 'border-red-600': '' " />
+               [ngClass]="{'border-red-600':userDetailForm.controls['imageLink'].errors && userDetailForm.controls['imageLink'].touched}" />
         <small class="p-error"
                *ngIf="userDetailForm.controls['imageLink'].errors && userDetailForm.controls['imageLink'].touched ">Image link is required.</small>
       </div>
       <div class="field flex flex-column">
         <label for="email">Email</label>
         <input type="text"
-               pInputText
                id="email"
+               pInputText
                required
                autofocus
                formControlName="email"
-               [ngClass]="userDetailForm.controls['email'].errors && userDetailForm.controls['email'].touched ? 'border-red-600': '' " />
+               [ngClass]="{'border-red-600':userDetailForm.controls['email'].errors && userDetailForm.controls['email'].touched}" >
         <small class="p-error"
                *ngIf="userDetailForm.controls['email'].errors && userDetailForm.controls['email'].touched " >Email is required.</small>
       </div>

@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {DataService} from "../../service/data.service";
+import {UserService} from "../../service/user.service";
 import {MessageService} from "primeng/api";
 
 
@@ -14,10 +13,9 @@ import {MessageService} from "primeng/api";
 export class LoginComponent implements OnInit {
 
   userLoginForm !: FormGroup;
-  constructor( private http: HttpClient,
-               private router: Router,
-               private dataService: DataService,
-               private messageService: MessageService) { }
+  constructor( private readonly router: Router,
+               private readonly userService: UserService,
+               private readonly messageService: MessageService) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -35,10 +33,10 @@ export class LoginComponent implements OnInit {
       alert("Enter valid data!!");
       return;
     }
-    this.dataService.getUserLoginCridential(this.userLoginForm.value).subscribe(
+    this.userService.getUserLoginCridential(this.userLoginForm.value).subscribe(
       (loginReqResponse) => {
         if(loginReqResponse.hasOwnProperty('token')){
-          this.dataService.isUserLoginCridentialCorrect = true;
+          this.userService.isUserLoginCridentialCorrect = true;
           this.messageService.add({key: 'loginKey', severity:'success', summary: 'Login successfully!!'});
           this.router.navigate(['dashboard']);
         }
@@ -48,7 +46,6 @@ export class LoginComponent implements OnInit {
         this.messageService.add({key: 'loginRejectionKey', severity:'error', summary:loginReqResponse.error.error});
       }
     )
-
   }
 
 }

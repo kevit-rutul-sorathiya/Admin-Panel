@@ -21,8 +21,6 @@ import {DialogModule} from "primeng/dialog";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {InputNumberModule} from "primeng/inputnumber";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {MessageModule} from "primeng/message";
-import {MessagesModule} from "primeng/messages";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {SidebarModule} from "primeng/sidebar";
 import {ConfirmPopupModule} from "primeng/confirmpopup";

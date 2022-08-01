@@ -1,43 +1,45 @@
 import {Component, OnChanges, OnInit} from '@angular/core';
-import {DataService} from "../../service/data.service";
-import {IUser} from "../../Interfaces/IUser";
+import {UserService} from "../../service/user.service";
+import {UserInterface} from "../../Interfaces/UserInterface";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {Router} from "@angular/router";
-import {HttpClient} from "@angular/common/http";
+
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-
 })
-export class DashboardComponent implements OnInit, OnChanges {
-  loading:boolean=false;
+export class DashboardComponent implements OnInit {
+
   page:number = 1;
   userID : number = -1;
   userDetailForm !: FormGroup;
   usersList:any;
-  user!:IUser;
+  user!:UserInterface;
   display:boolean =false;
   searchInput:string= '' ;
-  constructor(private dataService: DataService,
-              private confirmationService: ConfirmationService,
-              private messageService: MessageService,
-              private router: Router,
-              private http: HttpClient) {}
+  constructor(private readonly userService: UserService,
+              private readonly confirmationService: ConfirmationService,
+              private readonly messageService: MessageService,
+              private readonly router: Router) {}
+  columns:Array<{
+    column:string,
+    header:string
+  }> =[
+    {column:'first_name',header:'First Name'},
+    {column:'last_name',header:'Last Name'},
+    {column:'email',header:'Email'}
+  ]
 
   ngOnInit(): void {
     this.initForm();
     this.getUserList();
   }
 
-  ngOnChanges() {
-    console.log(this.searchInput)
-  }
-
   private getUserList(page? : number) {
-    this.dataService.getUsersList(page ? page : 1).subscribe(
+    this.userService.getUsersList(page ? page : 1).subscribe(
       (usersList:any)=>{
         this.page = usersList.total;
         this.usersList = [ ...usersList.data]
@@ -61,7 +63,7 @@ export class DashboardComponent implements OnInit, OnChanges {
       icon: 'pi pi-exclamation-triangle',
       accept: ()=>{
         this.messageService.add({severity:'success', summary: 'Successful', detail: 'User deleted', life: 3000});
-        this.dataService.getDeleteUser(id).subscribe(
+        this.userService.getDeleteUser(id).subscribe(
           (deleteUserRes)=>{
             console.log("deleteUserRes "+deleteUserRes);
           },
@@ -75,7 +77,7 @@ export class DashboardComponent implements OnInit, OnChanges {
 
   editProduct(id : number){
     this.display=true;
-    this.dataService.getSingleUser(id).subscribe(
+    this.userService.getSingleUser(id).subscribe(
       (singleUserObject:any)=>{
         this.userID = singleUserObject.data.id;
         this.userDetailForm.controls['firstName'].setValue(singleUserObject.data.first_name);
@@ -93,35 +95,38 @@ export class DashboardComponent implements OnInit, OnChanges {
 
   onUserDetailFormSubmit(){
     if (this.userID !== -1){
-      this.dataService.updateUserObject(this.userDetailForm.value,this.userID).subscribe(
+      this.userService.updateUserObject(this.userDetailForm.value,this.userID).subscribe(
         (res:any)=>{
           console.log(res);
           this.userDetailForm.reset();
           this.messageService.add({key: 'updateKey', severity:'success', summary: 'Updated successfully!!'});
+          this.display=false;
         }
       );
       this.userID = -1;
     }else{
-      this.dataService.createUser(this.userDetailForm.value).subscribe(
+      this.userService.createUser(this.userDetailForm.value).subscribe(
         (addUserRes)=>{
           console.log(addUserRes);
           this.messageService.add({key: 'addKey', severity:'success', summary: 'Created successfully!!'});
           this.userDetailForm.reset();
+          this.display=false;
         }
       )
     }
-    this.display=false;
+
   }
 
   onLogoutClick(){
     this.router.navigate(['login'])
+    this.userService.isUserLoginCridentialCorrect =false;
   }
 
-  onChangePage(e: any){
-    this.getUserList(((e.first/e.rows)+1))
+  onChangePage(event: any){
+    this.getUserList(((event.first/event.rows)+1))
   }
 
-  onSort(e: any) {
-    console.log(e);
+  onSort(event: any) {
+    console.log(event);
   }
 }
